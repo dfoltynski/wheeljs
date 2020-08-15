@@ -2,9 +2,10 @@
 
 const element = (
     <div id="container">
+        <button onClick={(e) => alert("Hi")}>click me</button>
         <input value="foo" type="text" />
         <a href="/bar">bar</a>
-        <span onClick={(e) => alert("Hi")}>click me</span>
+        <button onClick={(e) => alert("Hi2")}>click me</button>
     </div>
 );
 
@@ -23,17 +24,19 @@ function createElement(nodeName, attrs, ...args) {
 }
 
 function render(node) {
+    const { nodeName, attrs, children } = node;
+
     if (typeof node == "string") return document.createTextNode(node);
 
-    let dom = document.createElement(node.nodeName);
-    let attr = node.attrs || {};
+    let dom = document.createElement(nodeName);
 
-    // console.log(Object.keys(attr).map((k) => k.startsWith("on")));
-    let isListener = Object.keys(attr).map((k) => k.startsWith("on"))
-        ? true
-        : false;
-    Object.keys(attr).forEach((k) => dom.setAttribute(k, attr[k]));
-    let children = node.children || [];
+    Object.keys(attrs).forEach((k) => {
+        dom.setAttribute(k, attrs[k]);
+        console.log(attrs[k]);
+        k.startsWith("on")
+            ? dom.addEventListener(k.toLowerCase().substring(2), attrs[k])
+            : null;
+    });
     children.map((c) => dom.appendChild(render(c)));
 
     return dom;
