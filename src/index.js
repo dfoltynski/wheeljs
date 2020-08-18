@@ -1,17 +1,29 @@
 /** @jsx createElement */
+import mount from "./mount";
 
-const element = (
-    <div id="container">
-        <button onClick={(e) => alert("Hi")}>click me</button>
-        <input value="foo" type="text" />
-        <a href="/bar">bar</a>
-        <button onClick={(e) => alert("Hi2")}>click me</button>
-    </div>
-);
+let i = 0;
 
-let dom = render(element);
+function tick() {
+    if (i < 5) {
+        i++;
+        const element = (
+            <div id="root">
+                <button onClick={(e) => alert("Hi")}>click me</button>
+                <input value="foo" type="text" />
+                <a href="/bar">bar</a>
+                <button onClick={(e) => alert("Hi2")}>
+                    <span>click me</span>
+                </button>
+                <a href="/bar">bar</a>
+                <h2>It is {new Date().toLocaleTimeString()}</h2>
+            </div>
+        );
 
-document.body.appendChild(dom);
+        let rootEl = mount(render(element), document.getElementById("root"));
+    } else {
+        const element = "";
+    }
+}
 
 function createElement(nodeName, attrs, ...args) {
     const children = args.length ? [].concat(...args) : [];
@@ -23,6 +35,8 @@ function createElement(nodeName, attrs, ...args) {
     };
 }
 
+function reconciliation() {}
+
 function render(node) {
     const { nodeName, attrs, children } = node;
 
@@ -30,8 +44,10 @@ function render(node) {
 
     let dom = document.createElement(nodeName);
 
-    Object.keys(attrs).forEach((k) => {
+    Object.keys(attrs || {}).forEach((k) => {
         dom.setAttribute(k, attrs[k]);
+        console.log(attrs);
+        console.log(k);
         console.log(attrs[k]);
         k.startsWith("on")
             ? dom.addEventListener(k.toLowerCase().substring(2), attrs[k])
@@ -41,3 +57,5 @@ function render(node) {
 
     return dom;
 }
+
+setInterval(tick, 1000);
