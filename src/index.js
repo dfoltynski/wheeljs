@@ -1,29 +1,24 @@
 /** @jsx createElement */
 import mount from "./mount";
 
-let i = 0;
+const genElement = () => {
+    const element = (
+        <div id="root">
+            <button onClick={(e) => alert("Hi")}>click me</button>
+            <input value="foo" type="text" />
+            <a href="/bar">bar</a>
+            <button onClick={(e) => alert("Hi2")}>
+                <span>click me</span>
+            </button>
+            <a href="/bar">bar</a>
+            <h2>It is {new Date().toLocaleTimeString()}</h2>
+        </div>
+    );
 
-function tick() {
-    if (i < 5) {
-        i++;
-        const element = (
-            <div id="root">
-                <button onClick={(e) => alert("Hi")}>click me</button>
-                <input value="foo" type="text" />
-                <a href="/bar">bar</a>
-                <button onClick={(e) => alert("Hi2")}>
-                    <span>click me</span>
-                </button>
-                <a href="/bar">bar</a>
-                <h2>It is {new Date().toLocaleTimeString()}</h2>
-            </div>
-        );
+    return element;
+};
 
-        let rootEl = mount(render(element), document.getElementById("root"));
-    } else {
-        const element = "";
-    }
-}
+mount(render(genElement()), document.getElementById("root"));
 
 function createElement(nodeName, attrs, ...args) {
     const children = args.length ? [].concat(...args) : [];
@@ -58,4 +53,6 @@ function render(node) {
     return dom;
 }
 
-setInterval(tick, 1000);
+setInterval(() => {
+    mount(render(genElement()), document.getElementById("root"));
+}, 1000);
