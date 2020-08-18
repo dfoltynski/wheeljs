@@ -29,7 +29,6 @@ function createElement(nodeName, attrs, ...args) {
         children,
     };
 }
-
 function reconciliation() {}
 
 function render(node) {
