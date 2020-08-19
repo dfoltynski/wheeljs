@@ -1,4 +1,4 @@
-import render from "./render";
+import { render } from "./render";
 
 const diffAttrs = (oldAttrs, newAttrs) => {
     const patches = [];
@@ -12,7 +12,6 @@ const diffAttrs = (oldAttrs, newAttrs) => {
                 ? node.addEventListener(attr.toLowerCase().substring(2), value)
                 : null;
 
-            console.log("node", node);
             return node;
         });
     }
@@ -22,7 +21,6 @@ const diffAttrs = (oldAttrs, newAttrs) => {
         if (!(attr in newAttrs)) {
             patches.push((node) => {
                 node.removeAttribute(attr);
-                console.log("remove node", node);
 
                 return node;
             });
@@ -35,6 +33,23 @@ const diffAttrs = (oldAttrs, newAttrs) => {
         }
     };
 };
+
+function diffChildren(oldChildren, newChildren) {
+    const patches = [];
+    const additionalPatches = [];
+
+    oldChildren.forEach((oldChild, i) => {
+        patches.push(diff(oldChild, newChildren[i]));
+    });
+
+    return (node) => {
+        node.childNodes.forEach((child, i) => {
+            patches[i](child);
+        });
+
+        return node;
+    };
+}
 
 const diff = (vOldNode, vNewNode) => {
     if (vNewNode === undefined) {
@@ -67,13 +82,14 @@ const diff = (vOldNode, vNewNode) => {
     }
 
     const reconcileAttrs = diffAttrs(vOldNode.attrs, vNewNode.attrs);
-    // const reconcileChildren = diffChildren(
-    //     vOldNode.children,
-    //     vNewNode.children
-    // );
+    const reconcileChildren = diffChildren(
+        vOldNode.children,
+        vNewNode.children
+    );
 
     return (node) => {
         reconcileAttrs(node);
+        reconcileChildren(node);
         return node;
     };
 };

@@ -2,6 +2,7 @@
 import mount from "./vdom/mount";
 import { render, createElement } from "./vdom/render";
 import diff from "./vdom/diff";
+import _ from "lodash";
 
 const genElement = () => {
     const element = (
@@ -12,7 +13,6 @@ const genElement = () => {
             <button onClick={(e) => alert("Hi2")}>
                 <span>click me</span>
             </button>
-            <a href="/bar">bar</a>
             <h2>It is {new Date().toLocaleTimeString()}</h2>
         </div>
     );
