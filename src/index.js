@@ -24,14 +24,8 @@ let App = genElement();
 let rootEl = mount(render(App), document.getElementById("root"));
 
 setInterval(() => {
-    // mount(render(genElement()), document.getElementById("root"));
     const newApp = genElement();
-    // console.log(typeof App, typeof newApp);
-    // console.log(App, newApp);
     const reconcile = diff(App, newApp);
-    // console.log("------------------------diff return: ", reconcile);
     rootEl = reconcile(rootEl);
-    // console.log("rootEl: ", rootEl);
     App = newApp;
-    // mount(App, document.getElementById("root"));
 }, 1000);

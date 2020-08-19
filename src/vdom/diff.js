@@ -3,28 +3,27 @@ import render from "./render";
 const diffAttrs = (oldAttrs, newAttrs) => {
     const patches = [];
 
+    // pushing an anon function reference where we r create new attrs
     for (const [attr, value] of Object.entries(newAttrs || {})) {
-        // console.log("attr and value: ", attr, value);
-        // patches.push([attr, value]);
-        // console.log("patches: ", patches);
         patches.push((node) => {
-            //     // console.log("node: ", node);
-
             node.setAttribute(attr, value);
 
             attr.startsWith("on")
                 ? node.addEventListener(attr.toLowerCase().substring(2), value)
                 : null;
 
+            console.log("node", node);
             return node;
         });
     }
 
+    // pushing an anon function reference where we r delete not used/old attrs
     for (const [attr, value] of Object.entries(oldAttrs || {})) {
-        if (value in newAttrs) {
-            // patches.splice(patches.indexOf(attr), 1);
+        if (!(attr in newAttrs)) {
             patches.push((node) => {
                 node.removeAttribute(attr);
+                console.log("remove node", node);
+
                 return node;
             });
         }
@@ -32,8 +31,6 @@ const diffAttrs = (oldAttrs, newAttrs) => {
 
     return (node) => {
         for (const patch of patches) {
-            // console.log("reconcile and node: ", patch, node);
-            console.log("patch and node", patch(node), node);
             patch(node);
         }
     };
@@ -70,7 +67,6 @@ const diff = (vOldNode, vNewNode) => {
     }
 
     const reconcileAttrs = diffAttrs(vOldNode.attrs, vNewNode.attrs);
-    // console.log(vOldNode.attrs, vNewNode.attrs);
     // const reconcileChildren = diffChildren(
     //     vOldNode.children,
     //     vNewNode.children
@@ -78,7 +74,6 @@ const diff = (vOldNode, vNewNode) => {
 
     return (node) => {
         reconcileAttrs(node);
-        // console.log(node);
         return node;
     };
 };
