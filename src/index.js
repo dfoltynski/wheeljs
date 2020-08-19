@@ -1,9 +1,11 @@
 /** @jsx createElement */
-import mount from "./mount";
+import mount from "./vdom/mount";
+import { render, createElement } from "./vdom/render";
+import diff from "./vdom/diff";
 
 const genElement = () => {
     const element = (
-        <div id="root">
+        <div id="root" time={new Date().toLocaleTimeString()}>
             <button onClick={(e) => alert("Hi")}>click me</button>
             <input value="foo" type="text" />
             <a href="/bar">bar</a>
@@ -18,40 +20,18 @@ const genElement = () => {
     return element;
 };
 
-mount(render(genElement()), document.getElementById("root"));
-
-function createElement(nodeName, attrs, ...args) {
-    const children = args.length ? [].concat(...args) : [];
-
-    return {
-        nodeName,
-        attrs,
-        children,
-    };
-}
-function reconciliation() {}
-
-function render(node) {
-    const { nodeName, attrs, children } = node;
-
-    if (typeof node == "string") return document.createTextNode(node);
-
-    let dom = document.createElement(nodeName);
-
-    Object.keys(attrs || {}).forEach((k) => {
-        dom.setAttribute(k, attrs[k]);
-        console.log(attrs);
-        console.log(k);
-        console.log(attrs[k]);
-        k.startsWith("on")
-            ? dom.addEventListener(k.toLowerCase().substring(2), attrs[k])
-            : null;
-    });
-    children.map((c) => dom.appendChild(render(c)));
-
-    return dom;
-}
+let App = genElement();
+let rootEl = mount(render(App), document.getElementById("root"));
 
 setInterval(() => {
-    mount(render(genElement()), document.getElementById("root"));
+    // mount(render(genElement()), document.getElementById("root"));
+    const newApp = genElement();
+    // console.log(typeof App, typeof newApp);
+    // console.log(App, newApp);
+    const reconcile = diff(App, newApp);
+    // console.log("------------------------diff return: ", reconcile);
+    rootEl = reconcile(rootEl);
+    // console.log("rootEl: ", rootEl);
+    App = newApp;
+    // mount(App, document.getElementById("root"));
 }, 1000);
