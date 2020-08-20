@@ -2,7 +2,6 @@
 import mount from "./vdom/mount";
 import { render, createElement } from "./vdom/render";
 import diff from "./vdom/diff";
-import _ from "lodash";
 
 const genElement = () => {
     const element = (
@@ -25,6 +24,7 @@ let rootEl = mount(render(App), document.getElementById("root"));
 
 setInterval(() => {
     const newApp = genElement();
+
     const reconcile = diff(App, newApp);
     rootEl = reconcile(rootEl);
     App = newApp;

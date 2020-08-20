@@ -42,11 +42,21 @@ function diffChildren(oldChildren, newChildren) {
         patches.push(diff(oldChild, newChildren[i]));
     });
 
+    for (const additionalChild of newChildren.slice(oldChildren.length)) {
+        additionalPatches.push((node) => {
+            node.appendChild(render(newChildren));
+            return node;
+        });
+    }
+
     return (node) => {
         node.childNodes.forEach((child, i) => {
             patches[i](child);
         });
 
+        for (const patch of additionalPatches) {
+            patch(node);
+        }
         return node;
     };
 }
